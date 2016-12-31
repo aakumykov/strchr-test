@@ -5,6 +5,13 @@ void showMem(){
   Serial.println(freeMemory());
 }
 
+char* char2ptr(char letter) {
+  char* res = new char[2];
+        res[0] = letter;
+        res[1] = char(0);
+  return res;
+}
+
 char* str2ptr(char* str) {
   unsigned int len = strlen(str);
   char* res = new char[len+1];
@@ -13,12 +20,29 @@ char* str2ptr(char* str) {
   return res;
 }
 
-void showStr(char* str, char* prefix = NULL) {
+void showString(char* str, char* prefix = NULL) {
   if (NULL!=prefix) {
     Serial.print(prefix);
     Serial.print(": ");
   }
-  Serial.print(str); Serial.print(" ("); Serial.print(strlen(str)); Serial.println(")");
+  Serial.print(str); Serial.print(" (len: "); Serial.print(strlen(str)); Serial.println(")");
+}
+
+char* getPieceBefore(char* str, char delimiter) {
+  char* arr_delimiter = char2ptr(delimiter);
+  //Serial.print("arr_delimiter: "); Serial.println(arr_delimiter);
+  
+  byte len = strcspn(str, arr_delimiter);
+  //Serial.print("piece len: "); Serial.println(len);
+  
+  delete arr_delimiter;
+
+  char* piece = new char[len + 1]; // +1 для нулевого символа
+  strncpy(piece, str, len);
+  piece[len] = char(0);
+  //Serial.print("piece: "); Serial.println(piece);
+  
+  return piece;
 }
 
 void setup() {
@@ -28,17 +52,21 @@ void setup() {
     showMem();
     
     char* str = str2ptr("123|aaa_bbb_ccc_ddd");
-    showStr(str, "orig string");
+    showString(str, "orig string");
     char* next_start = str;
-    
-    next_start = strchr(str, '|') + 1;
-    showStr(next_start, "next_start");
 
-    while (NULL != next_start) {
-      next_start += 1;
-      showStr(next_start, "next_start");
-      next_start = strchr(next_start, '_');
-    }
+    char delimiter = '|';
+    char* piece = getPieceBefore(next_start, delimiter);
+    showString(piece, "piece");
+    delete piece;
+    next_start = strchr(str, delimiter) + 1;
+    showString(next_start, "next_start");
+
+//    while (NULL != next_start) {
+//      next_start += 1;
+//      showString(next_start, "next_start");
+//      next_start = strchr(next_start, '_');
+//    }
     
     delete str;
     showMem();
