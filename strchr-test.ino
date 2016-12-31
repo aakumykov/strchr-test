@@ -28,22 +28,29 @@ void showString(char* str, char* prefix = NULL) {
   Serial.print(str); Serial.print(" (len: "); Serial.print(strlen(str)); Serial.println(")");
 }
 
-char* getPieceBefore(char* str, char delimiter) {
+char* getPieceBefore(char* str, char delimiter, bool debug=false) {
   char* arr_delimiter = char2ptr(delimiter);
-  //Serial.print("arr_delimiter: "); Serial.println(arr_delimiter);
+  if (debug) {
+    Serial.print(F("arr_delimiter: ")); Serial.println(arr_delimiter);
+  }
   
   byte len = strcspn(str, arr_delimiter);
-  //Serial.print("piece len: "); Serial.println(len);
+  if (debug) {
+    Serial.print(F("piece len: ")); Serial.println(len);
+  }
   
   delete arr_delimiter;
 
   char* piece = new char[len + 1]; // +1 для нулевого символа
   strncpy(piece, str, len);
   piece[len] = char(0);
-  //Serial.print("piece: "); Serial.println(piece);
+  if (debug) {
+    Serial.print(F("piece: ")); Serial.println(piece);
+  }
   
   return piece;
 }
+
 
 void setup() {
   Serial.begin(9600);
@@ -56,8 +63,7 @@ void setup() {
     char* next_start = str;
 
     char delimiter = '|';
-    char* piece = getPieceBefore(next_start, delimiter);
-    showString(piece, "piece");
+    char* piece = getPieceBefore(next_start, delimiter, true);
     delete piece;
     next_start = strchr(str, delimiter);
 
@@ -65,8 +71,7 @@ void setup() {
       next_start += 1;
       showString(next_start, "next_start");
       
-      char* piece = getPieceBefore(next_start, delimiter);
-      showString(piece, "piece");
+      char* piece = getPieceBefore(next_start, delimiter, true);
       delete piece;
       
       next_start = strchr(next_start, '_');
