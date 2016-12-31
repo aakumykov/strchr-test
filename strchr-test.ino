@@ -59,14 +59,18 @@ void setup() {
     char* piece = getPieceBefore(next_start, delimiter);
     showString(piece, "piece");
     delete piece;
-    next_start = strchr(str, delimiter) + 1;
-    showString(next_start, "next_start");
+    next_start = strchr(str, delimiter);
 
-//    while (NULL != next_start) {
-//      next_start += 1;
-//      showString(next_start, "next_start");
-//      next_start = strchr(next_start, '_');
-//    }
+    while (NULL != next_start) {
+      next_start += 1;
+      showString(next_start, "next_start");
+      
+      char* piece = getPieceBefore(next_start, delimiter);
+      showString(piece, "piece");
+      delete piece;
+      
+      next_start = strchr(next_start, '_');
+    }
     
     delete str;
     showMem();
