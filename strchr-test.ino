@@ -54,6 +54,37 @@ char* getPieceBefore(char* str, char delimiter, bool debug=false) {
   return piece;
 }
 
+byte str2data(char* str, char command_delimiter, char data_delimiter, char mode_delimiter) {
+    // подготовка
+    char* _command_delimiter = char2ptr(command_delimiter);
+    char* _data_delimiter = char2ptr(data_delimiter);
+
+    unsigned int* data_array = new unsigned int[128];
+    byte _counter = 0;
+
+    // работа
+    char* _work_string = strchr(str, _command_delimiter);
+
+    while (NULL != _work_string) {
+      _work_string += 1;
+      
+      char* _piece = getPieceBefore(_work_string, _data_delimiter, false);
+        showString(_piece, "_piece");
+        
+      data_array[_counter] = (unsigned int)atoi(_piece);
+        Serial.print("data_array piece: "); Serial.println(data_array[_counter]);
+        
+      _counter++;
+      delete _piece;
+      
+      _work_string = strchr(_work_string, _data_delimiter);
+        showString(_work_string, "_work_string", true);
+    }
+
+    delete _command_delimiter;
+    delete _data_delimiter;
+    delete _work_string;
+}
 
 void setup() {
   Serial.begin(9600);
@@ -61,54 +92,19 @@ void setup() {
 
     showMem();
     
-    //char* str = str2ptr("123|aaa_bbb_ccc_ddd");
-    char* str = str2ptr("123|1_22_333_444");
-    char command_delimiter = '|';
-    char data_delimiter = '_';
+    char* input_str = str2ptr("123|1_22_333_444");
+      
+    byte cmd = getPieceBefore(input_str,'|');
+      showString(cmd, "cmd");
+      
+    unsigned int* data = str2data(input_str, '|', '_', ':');
+//    Serial.print(F("data array: "));
+//    for (byte i=0; i<counter; i++) {
+//      Serial.print(data_array[i]); Serial.print(F(", "));
+//    } Serial.println(F(""));
+//    delete data_array;
 
-    unsigned int* data_array = new unsigned int[128];
-    byte counter = 0;
-
-    char* work_string = str;
-    
-    char* piece = getPieceBefore(work_string, command_delimiter, false);
-      showString(piece, "PIECE");
-      showString(str, "orig string");
-    data_array[counter] = (unsigned int)atoi(piece);
-      Serial.print("data_array piece: "); Serial.println(data_array[counter]);
-    counter++;
-    delete piece;
-    work_string = strchr(str, command_delimiter);
-      showString(work_string, "work_string", true);
-
-    while (NULL != work_string) {
-      work_string += 1;
-      char* piece = getPieceBefore(work_string, data_delimiter, false);
-        showString(piece, "PIECE");
-        showString(str, "orig string");
-      data_array[counter] = (unsigned int)atoi(piece);
-        Serial.print("data_array piece: "); Serial.println(data_array[counter]);
-      counter++;
-      delete piece;
-      work_string = strchr(work_string, data_delimiter);
-        showString(work_string, "work_string", true);
-        
-        if (1==strlen(work_string)) {
-          Serial.print(F("[[ work_string: |"));
-          Serial.print(work_string);
-          Serial.print(F("| (char "));
-          Serial.print(byte(work_string));
-          Serial.println(F(") ]]"));
-        }
-    }
-    
-    delete str;
-    
-    Serial.print(F("data array: "));
-    for (byte i=0; i<counter; i++) {
-      Serial.print(data_array[i]); Serial.print(F(", "));
-    } Serial.println(F(""));
-    delete data_array;
+    delete input_str;
     
     showMem();
 }
