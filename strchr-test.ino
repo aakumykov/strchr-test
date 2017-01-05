@@ -31,64 +31,6 @@ void showString(char* str, char* prefix = NULL, bool newLine=false) {
   if (newLine) Serial.println(F(""));
 }
 
-char* getPieceBefore(char* str, char delimiter, bool debug=false) {
-  char* arr_delimiter = char2ptr(delimiter);
-  if (debug) {
-    Serial.print(F("arr_delimiter: ")); Serial.println(arr_delimiter);
-  }
-  
-  byte len = strcspn(str, arr_delimiter);
-  if (debug) {
-    Serial.print(F("piece len: ")); Serial.println(len);
-  }
-  
-  delete arr_delimiter;
-
-  char* piece = new char[len + 1]; // +1 для нулевого символа
-  strncpy(piece, str, len);
-  piece[len] = char(0);
-  if (debug) {
-    Serial.print(F("piece: ")); Serial.println(piece);
-  }
-  
-  return piece;
-}
-
-byte str2cmd(char* str, char command_delimiter) {
-  char* cmd_piece = getPieceBefore(str,command_delimiter);
-    byte cmd = (byte)atoi(cmd_piece);
-    delete cmd_piece;
-  return cmd;
-}
-
-unsigned int* str2data(char* str, char command_delimiter, char data_delimiter, char mode_delimiter) {
-    // подготовка
-    unsigned int* data_array = new unsigned int[128];
-    byte counter = 0;
-
-    // работа
-    char* work_string = strchr(str, command_delimiter);
-
-    while (NULL != work_string) {
-      work_string += 1;
-      
-      char* _piece = getPieceBefore(work_string, data_delimiter, false);
-        showString(_piece, "_piece");
-        
-      data_array[counter] = (unsigned int)atoi(_piece);
-        Serial.print("data_array[counter]: "); Serial.println(data_array[counter]);
-        
-      counter++;
-      delete _piece;
-      
-      work_string = strchr(work_string, data_delimiter);
-        showString(work_string, "work_string", true);
-    }
-
-    delete work_string;
-
-    return data_array;
-}
 
 void setup() {
   Serial.begin(9600);
@@ -98,16 +40,6 @@ void setup() {
     
     char* input_str = str2ptr("123|1_22_333_444");
 
-    byte cmd = str2cmd(input_str, '|');
-       Serial.print(F("cmd: ")); Serial.println(cmd);
-       
-    unsigned int* data = str2data(input_str, '|', '_', ':');
-    Serial.print(F("data: "));
-    for (byte i=0; i<4; i++) {
-      Serial.print(data[i]); Serial.print(F(", "));
-    } Serial.println(F(""));
-
-    delete data;
     delete input_str;
     
     showMem();
@@ -116,4 +48,98 @@ void setup() {
 void loop() {
 
 }
+
+class CmdParser {
+  public:
+    CmdParser(char command_delimiter, char data_delimiter, char mode_delimiter) {
+      this->_command_delimiter = command_delimiter;
+      this->_data_delimiter = data_delimiter;
+      this->_mode_delimiter = mode_delimiter;
+    }
+    
+    byte cmd() {
+      return this->_cmd;
+    }
+    byte count() {
+      return this->_counter;
+    }
+    byte length() {
+      return this->count();
+    }
+    unsigned int* data() {
+      return this->_data;
+    }
+    void clear() {
+      
+    }
+    byte parse(char* str) {
+      this->_cmd = this->str2cmd(str);
+      this->_data = this->str2data(str);
+    }
+    
+  private:
+    // полезные данные
+    byte _cmd;
+    unsigned int* _data = new unsigned int[128];
+    byte _counter = 0;
+
+    // служебные данные
+    char _command_delimiter;
+    char _data_delimiter;
+    char _mode_delimiter;
+
+    // полезные методы
+    byte str2cmd(char* str) {
+      char* cmd_piece = getPieceBefore(str,this->_command_delimiter);
+      this->_cmd = (byte)atoi(cmd_piece);
+      delete cmd_piece;
+    }
+
+    unsigned int* str2data(char* str) {
+        char* work_string = strchr(str, this->_command_delimiter);
+    
+        while (NULL != work_string) {
+          work_string += 1;
+          
+          char* piece = getPieceBefore(work_string, this->_data_delimiter, false);
+            showString(piece, "piece");
+            
+          this->_data[this->_counter] = (unsigned int)atoi(piece);
+          delete piece;
+          
+          this->_counter++;
+          
+          work_string = strchr(work_string, this->_data_delimiter);
+            showString(work_string, "work_string", true);
+        }
+    
+        delete work_string;
+    }
+    
+    // служебные методы
+    char* getPieceBefore(char* str, char delimiter, bool debug=false) {
+      char* arr_delimiter = char2ptr(delimiter);
+      if (debug) {
+        Serial.print(F("arr_delimiter: ")); Serial.println(arr_delimiter);
+      }
+      
+      byte len = strcspn(str, arr_delimiter);
+      if (debug) {
+        Serial.print(F("piece len: ")); Serial.println(len);
+      }
+      
+      delete arr_delimiter;
+    
+      char* piece = new char[len + 1]; // +1 для нулевого символа
+      strncpy(piece, str, len);
+      piece[len] = char(0);
+      if (debug) {
+        Serial.print(F("piece: ")); Serial.println(piece);
+      }
+      
+      return piece;
+    }
+
+    
+};
 
