@@ -54,36 +54,40 @@ char* getPieceBefore(char* str, char delimiter, bool debug=false) {
   return piece;
 }
 
-byte str2data(char* str, char command_delimiter, char data_delimiter, char mode_delimiter) {
-    // подготовка
-    char* _command_delimiter = char2ptr(command_delimiter);
-    char* _data_delimiter = char2ptr(data_delimiter);
+byte str2cmd(char* str, char command_delimiter) {
+  char* cmd_piece = getPieceBefore(str,command_delimiter);
+    byte cmd = (byte)atoi(cmd_piece);
+    delete cmd_piece;
+  return cmd;
+}
 
+unsigned int* str2data(char* str, char command_delimiter, char data_delimiter, char mode_delimiter) {
+    // подготовка
     unsigned int* data_array = new unsigned int[128];
-    byte _counter = 0;
+    byte counter = 0;
 
     // работа
-    char* _work_string = strchr(str, _command_delimiter);
+    char* work_string = strchr(str, command_delimiter);
 
-    while (NULL != _work_string) {
-      _work_string += 1;
+    while (NULL != work_string) {
+      work_string += 1;
       
-      char* _piece = getPieceBefore(_work_string, _data_delimiter, false);
+      char* _piece = getPieceBefore(work_string, data_delimiter, false);
         showString(_piece, "_piece");
         
-      data_array[_counter] = (unsigned int)atoi(_piece);
-        Serial.print("data_array piece: "); Serial.println(data_array[_counter]);
+      data_array[counter] = (unsigned int)atoi(_piece);
+        Serial.print("data_array[counter]: "); Serial.println(data_array[counter]);
         
-      _counter++;
+      counter++;
       delete _piece;
       
-      _work_string = strchr(_work_string, _data_delimiter);
-        showString(_work_string, "_work_string", true);
+      work_string = strchr(work_string, data_delimiter);
+        showString(work_string, "work_string", true);
     }
 
-    delete _command_delimiter;
-    delete _data_delimiter;
-    delete _work_string;
+    delete work_string;
+
+    return data_array;
 }
 
 void setup() {
@@ -93,17 +97,17 @@ void setup() {
     showMem();
     
     char* input_str = str2ptr("123|1_22_333_444");
-      
-    byte cmd = getPieceBefore(input_str,'|');
-      showString(cmd, "cmd");
-      
-    unsigned int* data = str2data(input_str, '|', '_', ':');
-//    Serial.print(F("data array: "));
-//    for (byte i=0; i<counter; i++) {
-//      Serial.print(data_array[i]); Serial.print(F(", "));
-//    } Serial.println(F(""));
-//    delete data_array;
 
+    byte cmd = str2cmd(input_str, '|');
+       Serial.print(F("cmd: ")); Serial.println(cmd);
+       
+    unsigned int* data = str2data(input_str, '|', '_', ':');
+    Serial.print(F("data: "));
+    for (byte i=0; i<4; i++) {
+      Serial.print(data[i]); Serial.print(F(", "));
+    } Serial.println(F(""));
+
+    delete data;
     delete input_str;
     
     showMem();
