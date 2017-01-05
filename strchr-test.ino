@@ -61,15 +61,22 @@ void setup() {
 
     showMem();
     
-    char* str = str2ptr("123|aaa_bbb_ccc_ddd");
+    //char* str = str2ptr("123|aaa_bbb_ccc_ddd");
+    char* str = str2ptr("123|1_22_333_444");
     char command_delimiter = '|';
     char data_delimiter = '_';
+
+    unsigned int* data_array = new unsigned int[128];
+    byte counter = 0;
 
     char* work_string = str;
     
     char* piece = getPieceBefore(work_string, command_delimiter, false);
-      showString(piece, "piece");
+      showString(piece, "PIECE");
       showString(str, "orig string");
+    data_array[counter] = (unsigned int)atoi(piece);
+      Serial.print("data_array piece: "); Serial.println(data_array[counter]);
+    counter++;
     delete piece;
     work_string = strchr(str, command_delimiter);
       showString(work_string, "work_string", true);
@@ -77,24 +84,33 @@ void setup() {
     while (NULL != work_string) {
       work_string += 1;
       char* piece = getPieceBefore(work_string, data_delimiter, false);
-        showString(piece, "piece");
+        showString(piece, "PIECE");
         showString(str, "orig string");
+      data_array[counter] = (unsigned int)atoi(piece);
+        Serial.print("data_array piece: "); Serial.println(data_array[counter]);
+      counter++;
       delete piece;
       work_string = strchr(work_string, data_delimiter);
         showString(work_string, "work_string", true);
         
         if (1==strlen(work_string)) {
-          Serial.print(F("work_string: |"));
+          Serial.print(F("[[ work_string: |"));
           Serial.print(work_string);
           Serial.print(F("| (char "));
           Serial.print(byte(work_string));
-          Serial.println(F(")"));
+          Serial.println(F(") ]]"));
         }
     }
     
     delete str;
+    
+    Serial.print(F("data array: "));
+    for (byte i=0; i<counter; i++) {
+      Serial.print(data_array[i]); Serial.print(F(", "));
+    } Serial.println(F(""));
+    delete data_array;
+    
     showMem();
-    Serial.println("");
 }
 
 void loop() {
