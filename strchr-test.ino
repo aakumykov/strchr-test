@@ -1,8 +1,10 @@
 #include <MemoryFree.h>
 
 void showMem(){
-  Serial.print("freeMemory()=");
+  Serial.println(F(""));
+  Serial.print(F("freeMemory()="));
   Serial.println(freeMemory());
+  Serial.println(F(""));
 }
 
 char* char2ptr(char letter) {
@@ -20,12 +22,13 @@ char* str2ptr(char* str) {
   return res;
 }
 
-void showString(char* str, char* prefix = NULL) {
+void showString(char* str, char* prefix = NULL, bool newLine=false) {
   if (NULL!=prefix) {
     Serial.print(prefix);
     Serial.print(": ");
   }
   Serial.print(str); Serial.print(" (len: "); Serial.print(strlen(str)); Serial.println(")");
+  if (newLine) Serial.println(F(""));
 }
 
 char* getPieceBefore(char* str, char delimiter, bool debug=false) {
@@ -59,22 +62,34 @@ void setup() {
     showMem();
     
     char* str = str2ptr("123|aaa_bbb_ccc_ddd");
-    showString(str, "orig string");
-    char* next_start = str;
+    char command_delimiter = '|';
+    char data_delimiter = '_';
 
-    char delimiter = '|';
-    char* piece = getPieceBefore(next_start, delimiter, true);
+    char* work_string = str;
+    
+    char* piece = getPieceBefore(work_string, command_delimiter, false);
+      showString(piece, "piece");
+      showString(str, "orig string");
     delete piece;
-    next_start = strchr(str, delimiter);
+    work_string = strchr(str, command_delimiter);
+      showString(work_string, "work_string", true);
 
-    while (NULL != next_start) {
-      next_start += 1;
-      showString(next_start, "next_start");
-      
-      char* piece = getPieceBefore(next_start, delimiter, true);
+    while (NULL != work_string) {
+      work_string += 1;
+      char* piece = getPieceBefore(work_string, data_delimiter, false);
+        showString(piece, "piece");
+        showString(str, "orig string");
       delete piece;
-      
-      next_start = strchr(next_start, '_');
+      work_string = strchr(work_string, data_delimiter);
+        showString(work_string, "work_string", true);
+        
+        if (1==strlen(work_string)) {
+          Serial.print(F("work_string: |"));
+          Serial.print(work_string);
+          Serial.print(F("| (char "));
+          Serial.print(byte(work_string));
+          Serial.println(F(")"));
+        }
     }
     
     delete str;
@@ -85,3 +100,4 @@ void setup() {
 void loop() {
 
 }
+
