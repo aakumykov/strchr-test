@@ -64,6 +64,15 @@ class CmdParser {
       this->processData(str);
       return this->count();
     }
+    void debug() {
+      Serial.print(F("len: ")); Serial.println(this->_counter);
+      Serial.print(F("cmd: ")); Serial.println(this->_cmd);
+      Serial.print(F("data: "));
+      for (int i=0; i < this->_counter; i++) {
+        Serial.print(this->_data[i]);
+        Serial.print(F(", "));
+      } Serial.println(F(""));
+    }
     
   private:
     // полезные данные
@@ -95,7 +104,7 @@ class CmdParser {
           char* piece = getPieceBefore(work_string, this->_data_delimiter);
             //showString(piece, "piece");
             
-          this->_data[this->_counter] = (unsigned int)atoi(piece);
+          this->_data[this->_counter] = (unsigned int)atol(piece);
           
           delete piece;
           
@@ -139,25 +148,16 @@ void setup() {
   Serial.println(F("=strchr-test="));
 
     showMem();
-    char* input_str = str2ptr("123|1_22_333_444");
+    //char* input_str = str2ptr("123|1_22_333_444");
 
-    cParser.parse(input_str);
+    cParser.parse("123|1_22_333_444");
+    cParser.debug();
 
-    byte len = cParser.length();
-      Serial.print(F("len: ")); Serial.println(len);
-
-    byte cmd = cParser.cmd();
-      Serial.print(F("cmd: ")); Serial.println(cmd);
-
-    unsigned int* data = cParser.data();
-      Serial.print(F("data: "));
-      for (int i=0; i<len; i++) {
-        Serial.print(data[i]);
-        Serial.print(F(", "));
-      }
-      Serial.println(F(""));
+    cParser.clear();
+    cParser.parse("456|65535_8888_999_10");
+    cParser.debug();
     
-    delete input_str;
+    //delete input_str;
     showMem();
 }
 
