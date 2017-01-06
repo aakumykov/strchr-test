@@ -24,6 +24,14 @@ void showString(char* str, char* prefix = NULL, bool newLine=false) {
   if (newLine) Serial.println(F(""));
 }
 
+void showString(byte str, char* prefix = NULL, bool newLine=false) {
+    if (NULL!=prefix) {
+    Serial.print(prefix);
+    Serial.print(": ");
+  }
+  Serial.print(str);
+  if (newLine) Serial.println(F(""));
+}
 
 class CmdParser {
   public:
@@ -34,6 +42,8 @@ class CmdParser {
     }
     
     byte cmd() {
+      Serial.println(F("CmdParser.cmd()"));
+        showString(this->_cmd,"this->_cmd");  
       return this->_cmd;
     }
     byte count() {
@@ -49,6 +59,7 @@ class CmdParser {
       this->_counter = 0;
     }
     byte parse(char* str) {
+      Serial.println(F("CmdParser.parse()"));
       this->_cmd = this->str2cmd(str);
       this->_data = this->str2data(str);
       return this->count();
@@ -67,12 +78,16 @@ class CmdParser {
 
     // полезные методы
     byte str2cmd(char* str) {
+      Serial.println(F("CmdParser.str2cmd()"));
       char* cmd_piece = getPieceBefore(str,this->_command_delimiter);
+        showString(cmd_piece,"cmd_piece");
       this->_cmd = (byte)atoi(cmd_piece);
       delete cmd_piece;
     }
 
     unsigned int* str2data(char* str) {
+        Serial.println(F("CmdParser.str2data()"));
+        
         char* work_string = strchr(str, this->_command_delimiter);
     
         while (NULL != work_string) {
@@ -95,6 +110,8 @@ class CmdParser {
     
     // служебные методы
     char* getPieceBefore(char* str, char delimiter, bool debug=false) {
+      Serial.println(F("CmdParser.getPieceBefore()"));
+      
       char* arr_delimiter = this->char2ptr(delimiter);
       if (debug) {
         Serial.print(F("arr_delimiter: ")); Serial.println(arr_delimiter);
@@ -118,6 +135,7 @@ class CmdParser {
     }
 
     char* char2ptr(char letter) {
+      Serial.println(F("CmdParser.char2ptr()"));
       char* res = new char[2];
             res[0] = letter;
             res[1] = char(0);
@@ -132,13 +150,25 @@ void setup() {
   Serial.println("=strchr-test=");
 
     showMem();
-    
     char* input_str = str2ptr("123|1_22_333_444");
 
     cParser.parse(input_str);
 
-    delete input_str;
+    byte len = cParser.length();
+      //Serial.print(F("len:")); Serial.println(len);
+      showString(len,"len", true);
+
+    byte cmd = cParser.cmd();
+      //Serial.print(F("cmd:")); Serial.println(cmd);
+      showString(cmd,"cmd",true);
+
+    unsigned int* data = cParser.data();
+      Serial.print(F("data: "));
+      for (int i=0; i<len; i++) {
+        Serial.print(data[i]); Serial.print(F(", "));
+      } Serial.println(F(""));
     
+    delete input_str;
     showMem();
 }
 
