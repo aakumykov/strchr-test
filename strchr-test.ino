@@ -1,3 +1,4 @@
+#include <SerialListener.h>
 #include <MemoryFree.h>
 
 void showMem(){
@@ -141,28 +142,44 @@ class CmdParser {
     }
 };
 
+SerialListener sListener(128,';');
 CmdParser cParser('|','_',':');
 
 void setup() {
   Serial.begin(9600);
   Serial.println(F("=strchr-test="));
-
-    showMem();
-    //char* input_str = str2ptr("123|1_22_333_444");
-
-    cParser.parse("123|1_22_333_444");
-    cParser.debug();
-
-    cParser.clear();
-    cParser.parse("456|65535_8888_999_10");
-    cParser.debug();
-    
-    //delete input_str;
-    showMem();
+  showMem();
+  
+//    //char* input_str = str2ptr("123|1_22_333_444");
+//
+//    cParser.parse("123|1_22_333_444");
+//    cParser.debug();
+//
+//    cParser.clear();
+//    cParser.parse("456|65535_8888_999_10");
+//    cParser.debug();
+//    
+//    //delete input_str;
+//    showMem();
 }
 
 void loop() {
+  sListener.wait();
 
+  if (sListener.recieved()) {
+    int len = sListener.length();
+    char* data = new char[len];
+    
+    data = sListener.data();
+//      Serial.print(F("incoming data: "));
+//      Serial.println(data);
+
+    cParser.parse(data);
+    delete data;
+    
+    cParser.debug();
+    
+    showMem();
+  }
 }
-
 
