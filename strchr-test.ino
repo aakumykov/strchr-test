@@ -7,13 +7,6 @@ void showMem(){
   Serial.println(F(""));
 }
 
-char* char2ptr(char letter) {
-  char* res = new char[2];
-        res[0] = letter;
-        res[1] = char(0);
-  return res;
-}
-
 char* str2ptr(char* str) {
   unsigned int len = strlen(str);
   char* res = new char[len+1];
@@ -31,73 +24,145 @@ void showString(char* str, char* prefix = NULL, bool newLine=false) {
   if (newLine) Serial.println(F(""));
 }
 
-char* getPieceBefore(char* str, char delimiter, bool debug=false) {
-  char* arr_delimiter = char2ptr(delimiter);
-  if (debug) {
-    Serial.print(F("arr_delimiter: ")); Serial.println(arr_delimiter);
+void showString(byte str, char* prefix = NULL, bool newLine=false) {
+    if (NULL!=prefix) {
+    Serial.print(prefix);
+    Serial.print(": ");
   }
-  
-  byte len = strcspn(str, arr_delimiter);
-  if (debug) {
-    Serial.print(F("piece len: ")); Serial.println(len);
-  }
-  
-  delete arr_delimiter;
-
-  char* piece = new char[len + 1]; // +1 для нулевого символа
-  strncpy(piece, str, len);
-  piece[len] = char(0);
-  if (debug) {
-    Serial.print(F("piece: ")); Serial.println(piece);
-  }
-  
-  return piece;
+  Serial.print(str);
+  if (newLine) Serial.println(F(""));
 }
 
+class CmdParser {
+  public:
+    CmdParser(char command_delimiter, char data_delimiter, char mode_delimiter) {
+      this->_command_delimiter = command_delimiter;
+      this->_data_delimiter = data_delimiter;
+      this->_mode_delimiter = mode_delimiter;
+    }
+    
+    byte cmd() {
+      //Serial.println(F("CmdParser.cmd()"));
+        //Serial.print(F("cmd: ")); Serial.println(this->_cmd);
+      return this->_cmd;
+    }
+    byte count() {
+      return this->_counter;
+    }
+    byte length() {
+      return this->count();
+    }
+    unsigned int* data() {
+      return this->_data;
+    }
+    void clear() {
+      this->_counter = 0;
+    }
+    byte parse(char* str) {
+      Serial.println(F("CmdParser.parse()"));
+      this->processCmd(str);
+      this->processData(str);
+      return this->count();
+    }
+    void debug() {
+      Serial.print(F("len: ")); Serial.println(this->_counter);
+      Serial.print(F("cmd: ")); Serial.println(this->_cmd);
+      Serial.print(F("data: "));
+      for (int i=0; i < this->_counter; i++) {
+        Serial.print(this->_data[i]);
+        Serial.print(F(", "));
+      } Serial.println(F(""));
+    }
+    
+  private:
+    // полезные данные
+    byte _cmd;
+    unsigned int* _data = new unsigned int[128];
+    byte _counter = 0;
+
+    // служебные данные
+    char _command_delimiter;
+    char _data_delimiter;
+    char _mode_delimiter;
+
+    // полезные методы
+    byte processCmd(char* str) {
+      //Serial.println(F("CmdParser.processCmd()"));
+      char* cmd_piece = getPieceBefore(str,this->_command_delimiter);
+      this->_cmd = (byte)atoi(cmd_piece);
+      delete cmd_piece;
+    }
+
+    unsigned int* processData(char* str) {
+        //Serial.println(F("CmdParser.processData()"));
+        
+        char* work_string = strchr(str, this->_command_delimiter);
+    
+        while (NULL != work_string) {
+          work_string += 1;
+          
+          char* piece = getPieceBefore(work_string, this->_data_delimiter);
+            //showString(piece, "piece");
+            
+          this->_data[this->_counter] = (unsigned int)atol(piece);
+          
+          delete piece;
+          
+          this->_counter++;
+          
+          work_string = strchr(work_string, this->_data_delimiter);
+            //showString(work_string, "work_string", true);
+        }
+    
+        delete work_string;
+    }
+    
+    // служебные методы
+    char* getPieceBefore(char* str, char delimiter) {
+      //Serial.println(F("CmdParser.getPieceBefore()"));
+      
+      char* arr_delimiter = this->char2ptr(delimiter);
+        byte len = strcspn(str, arr_delimiter);
+      delete arr_delimiter;
+    
+      char* piece = new char[len + 1]; // +1 для нулевого символа
+      strncpy(piece, str, len);
+      piece[len] = char(0);
+      
+      return piece;
+    }
+
+    char* char2ptr(char letter) {
+      //Serial.println(F("CmdParser.char2ptr()"));
+      char* res = new char[2];
+            res[0] = letter;
+            res[1] = char(0);
+      return res;
+    }
+};
+
+CmdParser cParser('|','_',':');
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("=strchr-test=");
+  Serial.println(F("=strchr-test="));
 
     showMem();
-    
-    char* str = str2ptr("123|aaa_bbb_ccc_ddd");
-    char command_delimiter = '|';
-    char data_delimiter = '_';
+    //char* input_str = str2ptr("123|1_22_333_444");
 
-    char* work_string = str;
-    
-    char* piece = getPieceBefore(work_string, command_delimiter, false);
-      showString(piece, "piece");
-      showString(str, "orig string");
-    delete piece;
-    work_string = strchr(str, command_delimiter);
-      showString(work_string, "work_string", true);
+    cParser.parse("123|1_22_333_444");
+    cParser.debug();
 
-    while (NULL != work_string) {
-      work_string += 1;
-      char* piece = getPieceBefore(work_string, data_delimiter, false);
-        showString(piece, "piece");
-        showString(str, "orig string");
-      delete piece;
-      work_string = strchr(work_string, data_delimiter);
-        showString(work_string, "work_string", true);
-        
-        if (1==strlen(work_string)) {
-          Serial.print(F("work_string: |"));
-          Serial.print(work_string);
-          Serial.print(F("| (char "));
-          Serial.print(byte(work_string));
-          Serial.println(F(")"));
-        }
-    }
+    cParser.clear();
+    cParser.parse("456|65535_8888_999_10");
+    cParser.debug();
     
-    delete str;
+    //delete input_str;
     showMem();
-    Serial.println("");
 }
 
 void loop() {
 
 }
+
 
