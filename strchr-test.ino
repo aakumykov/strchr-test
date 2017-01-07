@@ -157,42 +157,26 @@ void setup() {
   Serial.println(F("=strchr-test="));
   showMem("on setup");
   
-  char* input_str = str2ptr("123|1_22_333");
-  cParser.parse(input_str);
-  cParser.debug();
-  cParser.clear();
-  Serial.println(F(""));
-//  delete input_str;
-
-  input_str = str2ptr("123|1_22_333_4444");
-  cParser.parse(input_str);
-  cParser.debug();
-  cParser.clear();
-  Serial.println(F(""));
-//  delete input_str;
-
-  input_str = str2ptr("456|1_22_333_4444_55555");
-  cParser.parse(input_str);
-  cParser.debug(); cParser.clear(); Serial.println(F(""));
-//  delete input_str;
+//  char* input_str = str2ptr("123|1_22_333");
+//  cParser.parse(input_str);
+//  cParser.debug();
+//  cParser.clear();
+//  Serial.println(F(""));
+////  delete input_str;
 //
-//  input_str = str2ptr("129|65534_65535_65535_65535");
+//  input_str = str2ptr("123|1_22_333_4444");
+//  cParser.parse(input_str);
+//  cParser.debug();
+//  cParser.clear();
+//  Serial.println(F(""));
+////  delete input_str;
+//
+//  input_str = str2ptr("456|1_22_333_4444_55555");
 //  cParser.parse(input_str);
 //  cParser.debug(); cParser.clear(); Serial.println(F(""));
-//  delete input_str;
+////  delete input_str;
 //
-//  input_str = str2ptr("132|65534_65535_65535_65535_65535_65535_65535");
-//  cParser.parse(input_str);
-//  cParser.debug(); cParser.clear(); Serial.println(F(""));
-//  delete input_str;
-//
-//  //input_str = str2ptr("142|N:0,0_Y:0,100_Y:1000,1000_Y:1000,0_Y:0,0_N:250,250_Y:250,750_Y:750,750_Y:750:250_Y:250,250");
-//  input_str = str2ptr("142|0_100_1000_1000_0_250_750_750_750_250_345_567_1324_436_5345_3465_34_34_435_2_567_354_24_8");
-//  cParser.parse(input_str);
-//  cParser.debug(); cParser.clear(); Serial.println(F(""));
-//  delete input_str;
-
-  showMem();
+//  showMem();
 }
 
 void loop() {
@@ -211,5 +195,30 @@ void loop() {
 //    
 //    showMem();
 //  }
+
+  for (int i=0; i<5; i++) {
+    char* input_str = str2ptr("123|1_22_333");
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+  //  delete input_str;
+  
+    input_str = str2ptr("123|1_22_333_4444");
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+  //  delete input_str;
+  
+    input_str = str2ptr("456|1_22_333_4444_55555");
+    cParser.parse(input_str);
+    cParser.debug(); cParser.clear(); Serial.println(F(""));
+  //  delete input_str;
+  
+    showMem();
+  }
+
+  delay(100000);
 }
 
