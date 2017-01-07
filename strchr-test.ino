@@ -180,45 +180,20 @@ void setup() {
 }
 
 void loop() {
-//  sListener.wait();
-//
-//  if (sListener.recieved()) {
-//    char* data = new char[sListener.length()];
-//          data = sListener.data();
-//
-//    cParser.parse(data);
-//    delete data;
-//    
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//    
-//    showMem();
-//  }
+  sListener.wait();
 
-  for (int i=0; i<5; i++) {
-    char* input_str = str2ptr("123|1_22_333");
-    cParser.parse(input_str);
+  if (sListener.recieved()) {
+    char* data = new char[sListener.length()];
+          data = sListener.data();
+
+    cParser.parse(data);
+    delete data;
+    
     cParser.debug();
     cParser.clear();
     Serial.println(F(""));
-  //  delete input_str;
-  
-    input_str = str2ptr("123|1_22_333_4444");
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-  //  delete input_str;
-  
-    input_str = str2ptr("456|1_22_333_4444_55555");
-    cParser.parse(input_str);
-    cParser.debug(); cParser.clear(); Serial.println(F(""));
-  //  delete input_str;
-  
+    
     showMem();
   }
-
-  delay(100000);
 }
 
