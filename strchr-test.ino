@@ -147,19 +147,41 @@ void setup() {
   Serial.println(F("=strchr-test="));
 
     showMem();
-    //char* input_str = str2ptr("123|1_22_333_444");
 
-    cParser.parse("123|1_22_333_444");
+//    cParser.parse("123|1_22_333_444");
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//    
+//    cParser.parse("456|65535_8888_999_10_23348");
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//
+//    cParser.parse("789|1_22_333_4444_55555_6666_777_88_9_00_111_2222_33333_4444_555_66_7");
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+
+    char* input_str = str2ptr("123|1_22_333_444");
+
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+
+    cParser.parse(input_str);
     cParser.debug();
     cParser.clear();
     Serial.println(F(""));
     
-    cParser.parse("456|65535_8888_999_10_23348");
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    
-    //delete input_str;
+    delete input_str;
+
     showMem();
 }
 
