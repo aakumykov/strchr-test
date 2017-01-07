@@ -188,13 +188,15 @@ void loop() {
 */
   
   sListener.wait();
+  delay(100);
   
 //  if (interval.ready()) {
-    if(millis()%100==0){
-      delay(1);
+//    if(millis()%100==0){
+//      delay(1);
     
     if (sListener.recieved()) {
-  
+      delay(100);
+      
       char* data = new char[sListener.length()];
       data = sListener.data();
   
@@ -208,6 +210,6 @@ void loop() {
       showMem();
     }
 
-  }
+//  }
 }
 
