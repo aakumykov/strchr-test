@@ -188,14 +188,10 @@ void loop() {
 */
   
   sListener.wait();
-
-  if (interval.ready()) {
-
-    if (sListener.recieved()) {    
   
-  //    int len = sListener.length();
-  //    Serial.print(F("len: ")); Serial.println(len);
-  //    char* data = new char[len];
+  if (interval.ready()) {
+    
+    if (sListener.recieved()) {
   
       char* data = new char[sListener.length()];
       data = sListener.data();
