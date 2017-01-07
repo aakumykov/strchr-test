@@ -157,14 +157,23 @@ void setup() {
   Serial.println(F("=strchr-test="));
   showMem("on setup");
   
-//  char* input_str = str2ptr("123|1_22_333");
-//  cParser.parse(input_str);
-//  cParser.debug(); cParser.clear(); Serial.println(F(""));
+  char* input_str = str2ptr("123|1_22_333");
+  cParser.parse(input_str);
+  cParser.debug();
+  cParser.clear();
+  Serial.println(F(""));
 //  delete input_str;
-//
-//  input_str = str2ptr("456|1_22_333_4444_55555");
-//  cParser.parse(input_str);
-//  cParser.debug(); cParser.clear(); Serial.println(F(""));
+
+  input_str = str2ptr("123|1_22_333_4444");
+  cParser.parse(input_str);
+  cParser.debug();
+  cParser.clear();
+  Serial.println(F(""));
+//  delete input_str;
+
+  input_str = str2ptr("456|1_22_333_4444_55555");
+  cParser.parse(input_str);
+  cParser.debug(); cParser.clear(); Serial.println(F(""));
 //  delete input_str;
 //
 //  input_str = str2ptr("129|65534_65535_65535_65535");
@@ -183,24 +192,24 @@ void setup() {
 //  cParser.debug(); cParser.clear(); Serial.println(F(""));
 //  delete input_str;
 
-//  showMem();
+  showMem();
 }
 
 void loop() {
-  sListener.wait();
-
-  if (sListener.recieved()) {
-    char* data = new char[sListener.length()];
-          data = sListener.data();
-
-    cParser.parse(data);
-    delete data;
-    
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    
-    showMem();
-  }
+//  sListener.wait();
+//
+//  if (sListener.recieved()) {
+//    char* data = new char[sListener.length()];
+//          data = sListener.data();
+//
+//    cParser.parse(data);
+//    delete data;
+//    
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//    
+//    showMem();
+//  }
 }
 
