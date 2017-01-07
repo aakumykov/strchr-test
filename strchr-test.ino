@@ -1,10 +1,16 @@
 #include <MemoryFree.h>
+#include <SerialListener.h>
 
-void showMem(){
-  Serial.println(F(""));
-  Serial.print(F("freeMemory()="));
+void showMem(char* comment=NULL){
+  //Serial.println(F(""));
+  Serial.print(F("Free memory"));
+  if (NULL != comment)  {
+    Serial.print(F(" "));
+    Serial.print(comment);
+  }
+  Serial.print(F(": "));
   Serial.println(freeMemory());
-  Serial.println(F(""));
+  //Serial.println(F(""));
 }
 
 char* str2ptr(char* str) {
@@ -140,13 +146,17 @@ class CmdParser {
     }
 };
 
+SerialListener sL(256,';');
 CmdParser cParser('|','_',':');
 
 void setup() {
   Serial.begin(9600);
   Serial.println(F("=strchr-test="));
 
-    showMem();
+    showMem("on setup");
+    Serial.println(F(""));
+
+  // статика
 
 //    cParser.parse("123|1_22_333_444");
 //    cParser.debug();
@@ -163,32 +173,54 @@ void setup() {
 //    cParser.clear();
 //    Serial.println(F(""));
 
-    char* input_str = str2ptr("123|1_22_333_444");
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    delete input_str;
+  // динамика
 
-    input_str = str2ptr("456|5_66_777_8888");
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    delete input_str;
+//    char* input_str = str2ptr("123|1_22_333_444");
+//    cParser.parse(input_str);
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//    delete input_str;
+//
+//    input_str = str2ptr("456|5_66_777_8888");
+//    cParser.parse(input_str);
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//    delete input_str;
+//
+//    input_str = str2ptr("789|65535_1024_512_256_128_64_32_16_8_4_2_1");
+//    cParser.parse(input_str);
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+//    delete input_str;
 
-    input_str = str2ptr("789|65535_1024_512_256_128_64_32_16_8_4_2_1");
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    delete input_str;
-
-    showMem();
+//    showMem();
 }
 
 void loop() {
+  sL.wait();
 
+  if (sL.recieved()) {
+    char* data = new char[sL.length()];
+     data = sL.data();
+    showMem("on data recieved");
+    
+    showString(data);
+
+    cParser.parse(data);
+    showMem("on data parsed");
+    
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+    
+    delete data;
+    showMem("on data deleted");
+    
+    Serial.println(F(""));
+  }
 }
 
 
