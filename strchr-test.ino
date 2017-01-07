@@ -1,4 +1,5 @@
 #include <SerialListener.h>
+#include <Interval.h>
 #include <MemoryFree.h>
 
 void showMem(char* comment=NULL){
@@ -150,6 +151,7 @@ class CmdParser {
 };
 
 SerialListener sListener(256,';');
+Interval interval(100);
 CmdParser cParser(256, '|','_',':');
 
 void setup() {
@@ -180,30 +182,34 @@ void setup() {
 }
 
 void loop() {
-  sListener.wait();
-
-  if (sListener.recieved()) {    
-//    char* data = new char[sListener.length()];
-
-    int len = sListener.length();
-    Serial.print(F("len: ")); Serial.println(len);
-
 /* Эта последовательность вешает программу:
 123|1_2_3_4_5_6_7_8_9_0;
 123|1_2_3;
 */
+  
+  sListener.wait();
 
-    char* data = new char[len];
-          data = sListener.data();
+  if (interval.ready()) {
 
-    cParser.parse(data);
-    delete data;
+    if (sListener.recieved()) {    
+  
+  //    int len = sListener.length();
+  //    Serial.print(F("len: ")); Serial.println(len);
+  //    char* data = new char[len];
+  
+      char* data = new char[sListener.length()];
+      data = sListener.data();
+  
+      cParser.parse(data);
+      delete data;
+      
+      cParser.debug();
+      cParser.clear();
+      Serial.println(F(""));
+      
+      showMem();
+    }
     
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    
-    showMem();
   }
 }
 
