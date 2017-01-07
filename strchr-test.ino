@@ -182,8 +182,18 @@ void setup() {
 void loop() {
   sListener.wait();
 
-  if (sListener.recieved()) {
-    char* data = new char[sListener.length()];
+  if (sListener.recieved()) {    
+//    char* data = new char[sListener.length()];
+
+    int len = sListener.length();
+    Serial.print(F("len: ")); Serial.println(len);
+
+/* Эта последовательность вешает программу:
+123|1_2_3_4_5_6_7_8_9_0;
+123|1_2_3;
+*/
+
+    char* data = new char[len];
           data = sListener.data();
 
     cParser.parse(data);
