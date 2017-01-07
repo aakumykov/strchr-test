@@ -163,7 +163,8 @@ void setup() {
 //    cParser.clear();
 //    Serial.println(F(""));
 
-    char* input_str = str2ptr("123|1_22_333_444");
+    char* input_str = "123|1_22_333_444";
+    showString(input_str,"input_str",true);
 
     cParser.parse(input_str);
     cParser.debug();
