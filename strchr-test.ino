@@ -170,18 +170,21 @@ void setup() {
     cParser.debug();
     cParser.clear();
     Serial.println(F(""));
-
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-
-    cParser.parse(input_str);
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    
     delete input_str;
+
+    input_str = "456|5_66_777_8888";
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+    delete input_str;
+
+//    cParser.parse(input_str);
+//    cParser.debug();
+//    cParser.clear();
+//    Serial.println(F(""));
+    
+//    delete input_str;
 
     showMem();
 }
