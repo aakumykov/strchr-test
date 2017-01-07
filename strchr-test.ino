@@ -163,28 +163,26 @@ void setup() {
 //    cParser.clear();
 //    Serial.println(F(""));
 
-    char* input_str = "123|1_22_333_444";
-    showString(input_str,"input_str",true);
-
+    char* input_str = str2ptr("123|1_22_333_444");
     cParser.parse(input_str);
     cParser.debug();
     cParser.clear();
     Serial.println(F(""));
     delete input_str;
 
-    input_str = "456|5_66_777_8888";
+    input_str = str2ptr("456|5_66_777_8888");
     cParser.parse(input_str);
     cParser.debug();
     cParser.clear();
     Serial.println(F(""));
     delete input_str;
 
-//    cParser.parse(input_str);
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-    
-//    delete input_str;
+    input_str = str2ptr("789|65535_1024_512_256_128_64_32_16_8_4_2_1");
+    cParser.parse(input_str);
+    cParser.debug();
+    cParser.clear();
+    Serial.println(F(""));
+    delete input_str;
 
     showMem();
 }
