@@ -67,7 +67,7 @@ class CmdParser {
       this->_counter = 0;
     }
     byte parse(char* str) {
-      Serial.println(F("CmdParser.parse()"));
+//      Serial.println(F("CmdParser.parse()"));
       this->processCmd(str);
       this->processData(str);
       return this->count();
@@ -189,7 +189,9 @@ void loop() {
   
   sListener.wait();
   
-  if (interval.ready()) {
+//  if (interval.ready()) {
+    if(millis()%100==0){
+      delay(1);
     
     if (sListener.recieved()) {
   
@@ -205,7 +207,7 @@ void loop() {
       
       showMem();
     }
-    
+
   }
 }
 
