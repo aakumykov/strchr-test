@@ -150,6 +150,8 @@ class CmdParser {
     }
 };
 
+const byte max_len = 255;
+//char* data = new char[max_len];
 SerialListener sListener(256,';');
 Interval interval(100);
 CmdParser cParser(256, '|','_',':');
@@ -188,19 +190,18 @@ void loop() {
 */
   
   sListener.wait();
-  delay(100);
+//  delay(100);
   
 //  if (interval.ready()) {
 //    if(millis()%100==0){
 //      delay(1);
     
     if (sListener.recieved()) {
-      delay(100);
+//      delay(100);
       
-      char* data = new char[sListener.length()];
-      data = sListener.data();
-  
-      cParser.parse(data);
+      char* data = new char[max_len];
+        data = sListener.data();
+        cParser.parse(data);
       delete data;
       
       cParser.debug();
