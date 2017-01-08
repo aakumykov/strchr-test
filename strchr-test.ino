@@ -192,14 +192,14 @@ void loop() {
   sListener.wait();
 //  delay(100);
   
-//  if (interval.ready()) {
+  if (interval.ready()) {
 //    if(millis()%100==0){
 //      delay(1);
     
     if (sListener.recieved()) {
 //      delay(100);
       
-      char* data = new char[max_len];
+      char* data = new char[sListener.length()];
         data = sListener.data();
         cParser.parse(data);
       delete data;
@@ -211,6 +211,6 @@ void loop() {
       showMem();
     }
 
-//  }
+  }
 }
 
