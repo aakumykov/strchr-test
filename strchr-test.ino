@@ -166,6 +166,8 @@ void loop() {
 123|1_2_3_4_5;
 456|11_22_33_44_55_66;
 78|1_222_33;
+
+123|1_2_3_4_5; 456|11_22_33_44_55_66; 78|1_222_33;
 */
 
   sL.wait();
@@ -178,14 +180,19 @@ void loop() {
     showString(rawData, "rawData");
 
     cParser.parse(rawData);
-    //delete rawData;
+    delete rawData;
+    
+    unsigned int cmd = cParser.cmd();
+    showString(cmd, "cmd", true);
+    
     int len = cParser.count();
+    showString(len, "len", true);
+    
     unsigned int* data = new unsigned int[len];
     data = cParser.data();
-    unsigned int cmd = cParser.cmd();
-
-    delete data;
-    delete rawData;
+    showMem("on retrive data");
+//    delete data; // это удалять нельзя: программа падает из-за проблем с памятью
+    
     //cParser.debug();
     cParser.clear();
     
