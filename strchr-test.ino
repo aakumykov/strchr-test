@@ -99,7 +99,7 @@ class CmdParser {
     }
 
     unsigned int* processData(char* str) {
-        //Serial.println(F("CmdParser.processData()"));
+        Serial.println(F("CmdParser.processData()"));
         
         char* work_string = strchr(str, this->_command_delimiter);
     
@@ -107,13 +107,34 @@ class CmdParser {
           work_string += 1;
           
           char* piece = getPieceBefore(work_string, this->_data_delimiter);
-            //showString(piece, "piece");
-            
-          this->_data[this->_counter] = (unsigned int)atol(piece);
+            showString(piece, "piece");
+
+          bool laserActive = byte(piece[0])=='Y';
+            showString(laserActive, "laserActive");
+
+          piece = piece + 1;
+            showString(piece, "piece");
+
+          char* rawX = this->getPieceBefore(piece,',');
+            showString(rawX, "rawX");
           
+          char* rawY = strchr(piece,',') + 1;
+            showString(rawY, "rawY");
+          
+//123|N0,0
+          unsigned int x = (unsigned int)atol(rawX);
+          unsigned int y = (unsigned int)atol(rawY);
+
+          delete rawX, rawY;
           delete piece;
-          
-          this->_counter++;
+
+          if (laserActive) {
+            x += 32768;
+            y += 32768;
+          }
+
+          this->_data[this->_counter++] = x;
+          this->_data[this->_counter++] = y;
           
           work_string = strchr(work_string, this->_data_delimiter);
             //showString(work_string, "work_string", true);
@@ -158,16 +179,10 @@ void setup() {
 }
 
 void loop() {
- /* Последовательность, где-то вешающая программу:
-123|1_2_3_4_5_6_7_8_9_0;
-123|1_2_3;
-*/
 /*
-123|1_2_3_4_5;
-456|11_22_33_44_55_66;
-78|1_222_33;
-
 123|1_2_3_4_5; 456|11_22_33_44_55_66; 78|1_222_33;
+
+123|N0,0_Y0,1000_Y1000,1000_Y1000,0_Y0,0;
 */
 
   sL.wait();
