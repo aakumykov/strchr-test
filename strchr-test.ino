@@ -155,48 +155,6 @@ void setup() {
 
     showMem("on setup");
     Serial.println(F(""));
-
-  // статика
-
-//    cParser.parse("123|1_22_333_444");
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//    
-//    cParser.parse("456|65535_8888_999_10_23348");
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//
-//    cParser.parse("789|1_22_333_4444_55555_6666_777_88_9_00_111_2222_33333_4444_555_66_7");
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-
-  // динамика
-
-//    char* input_str = str2ptr("123|1_22_333_444");
-//    cParser.parse(input_str);
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//    delete input_str;
-//
-//    input_str = str2ptr("456|5_66_777_8888");
-//    cParser.parse(input_str);
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//    delete input_str;
-//
-//    input_str = str2ptr("789|65535_1024_512_256_128_64_32_16_8_4_2_1");
-//    cParser.parse(input_str);
-//    cParser.debug();
-//    cParser.clear();
-//    Serial.println(F(""));
-//    delete input_str;
-
-//    showMem();
 }
 
 void loop() {
@@ -213,22 +171,25 @@ void loop() {
   sL.wait();
 
   if (sL.recieved()) {
-    char* data = new char[sL.length()];
-     data = sL.data();
-    showMem("on data recieved");
+    showMem("on start");
     
-    showString(data);
+    char* rawData = new char[sL.length()];
+    rawData = sL.data();
+    showString(rawData, "rawData");
 
-    cParser.parse(data);
-    showMem("on data parsed");
-    
-    cParser.debug();
-    cParser.clear();
-    Serial.println(F(""));
-    
+    cParser.parse(rawData);
+    //delete rawData;
+    int len = cParser.count();
+    unsigned int* data = new unsigned int[len];
+    data = cParser.data();
+    unsigned int cmd = cParser.cmd();
+
     delete data;
-    showMem("on data deleted");
+    delete rawData;
+    //cParser.debug();
+    cParser.clear();
     
+    showMem("on finish");
     Serial.println(F(""));
   }
 }
