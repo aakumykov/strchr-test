@@ -110,28 +110,40 @@ class CmdParser {
             showString(piece, "piece");
 
           bool laserActive = byte(piece[0])=='Y';
-            showString(laserActive, "laserActive");
+            showString(laserActive, "laserActive", true);
 
           piece = piece + 1;
             showString(piece, "piece");
-
+          
+          // этот вариант ничего не меняет
+//          byte x_span = strcspn(piece,",");
+//            showString(x_span, "x_span", true);
+//          char* rawX = new char[x_span];
+//          strncpy(rawX,piece,x_span);
+          
           char* rawX = this->getPieceBefore(piece,',');
             showString(rawX, "rawX");
           
           char* rawY = strchr(piece,',') + 1;
             showString(rawY, "rawY");
           
-//123|N0,0
+//123|N100,20;
           unsigned int x = (unsigned int)atol(rawX);
+            showString(x, "x", true);
+          
           unsigned int y = (unsigned int)atol(rawY);
+            showString(y, "y", true);
 
-          delete rawX, rawY;
+          delete rawX;
+          delete rawY;
           delete piece;
 
           if (laserActive) {
             x += 32768;
             y += 32768;
           }
+//            showString(x, "mod x", true);
+//            showString(y, "mod y", true);
 
           this->_data[this->_counter++] = x;
           this->_data[this->_counter++] = y;
@@ -183,6 +195,7 @@ void loop() {
 123|1_2_3_4_5; 456|11_22_33_44_55_66; 78|1_222_33;
 
 123|N0,0_Y0,1000_Y1000,1000_Y1000,0_Y0,0;
+123|Y0,1000_Y1000,1000;
 */
 
   sL.wait();
@@ -197,18 +210,18 @@ void loop() {
     cParser.parse(rawData);
     delete rawData;
     
-    unsigned int cmd = cParser.cmd();
-    showString(cmd, "cmd", true);
-    
-    int len = cParser.count();
-    showString(len, "len", true);
-    
-    unsigned int* data = new unsigned int[len];
-    data = cParser.data();
-    showMem("on retrive data");
-//    delete data; // это удалять нельзя: программа падает из-за проблем с памятью
-    
-    //cParser.debug();
+//    unsigned int cmd = cParser.cmd();
+//    showString(cmd, "cmd", true);
+//    
+//    int len = cParser.count();
+//    showString(len, "len", true);
+//    
+//    unsigned int* data = new unsigned int[len];
+//    data = cParser.data();
+//    showMem("on retrive data");
+////    delete data; // это удалять нельзя: программа падает из-за проблем с памятью
+//    
+//    //cParser.debug();
     cParser.clear();
     
     showMem("on finish");
