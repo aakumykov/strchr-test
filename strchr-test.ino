@@ -65,7 +65,7 @@ class CmdParser {
       this->_counter = 0;
     }
     unsigned int parse(char* str) {
-      Serial.println(F("CmdParser.parse()"));
+//      Serial.println(F("CmdParser.parse()"));
       this->processCmd(str);
       this->processData(str);
       return this->count();
@@ -92,64 +92,23 @@ class CmdParser {
 
     // полезные методы
     unsigned int processCmd(char* str) {
-      //Serial.println(F("CmdParser.processCmd()"));
+//      Serial.println(F("CmdParser.processCmd()"));
       char* cmd_piece = getPieceBefore(str,this->_command_delimiter);
       this->_cmd = (unsigned int)atol(cmd_piece);
       delete cmd_piece;
     }
 
     unsigned int* processData(char* str) {
-        Serial.println(F("CmdParser.processData()"));
+//        Serial.println(F("CmdParser.processData()"));
         
         char* work_string = strchr(str, this->_command_delimiter);
     
         while (NULL != work_string) {
-          work_string += 1;
-          
-          char* piece = getPieceBefore(work_string, this->_data_delimiter);
-            showString(piece, "piece");
+          showString(work_string, "work_string", true);
 
-          bool laserActive = byte(piece[0])=='Y';
-            showString(laserActive, "laserActive", true);
-
-          piece = piece + 1;
-            showString(piece, "piece");
-          
-          // этот вариант ничего не меняет
-//          byte x_span = strcspn(piece,",");
-//            showString(x_span, "x_span", true);
-//          char* rawX = new char[x_span];
-//          strncpy(rawX,piece,x_span);
-          
-          char* rawX = this->getPieceBefore(piece,',');
-            showString(rawX, "rawX");
-          
-          char* rawY = strchr(piece,',') + 1;
-            showString(rawY, "rawY");
-          
-//123|N100,20;
-          unsigned int x = (unsigned int)atol(rawX);
-            showString(x, "x", true);
-          
-          unsigned int y = (unsigned int)atol(rawY);
-            showString(y, "y", true);
-
-          delete rawX;
-          delete rawY;
-          delete piece;
-
-          if (laserActive) {
-            x += 32768;
-            y += 32768;
-          }
-//            showString(x, "mod x", true);
-//            showString(y, "mod y", true);
-
-          this->_data[this->_counter++] = x;
-          this->_data[this->_counter++] = y;
+//          bool laserOn = 'Y'==work_string[0];
           
           work_string = strchr(work_string, this->_data_delimiter);
-            //showString(work_string, "work_string", true);
         }
     
         delete work_string;
@@ -192,10 +151,8 @@ void setup() {
 
 void loop() {
 /*
-123|1_2_3_4_5; 456|11_22_33_44_55_66; 78|1_222_33;
-
-123|N0,0_Y0,1000_Y1000,1000_Y1000,0_Y0,0;
-123|Y0,1000_Y1000,1000;
+123|N0,N0,Y0,Y1000,Y1000,Y1000,Y1000,Y0,Y0,Y0;
+123|Y0,Y2000,Y100,Y300;
 */
 
   sL.wait();
@@ -208,22 +165,11 @@ void loop() {
     showString(rawData, "rawData");
 
     cParser.parse(rawData);
+     unsigned int cmd = cParser.cmd();
+     showString(cmd,"cmd",true);
+//    cParser.clear();
+    
     delete rawData;
-    
-//    unsigned int cmd = cParser.cmd();
-//    showString(cmd, "cmd", true);
-//    
-//    int len = cParser.count();
-//    showString(len, "len", true);
-//    
-//    unsigned int* data = new unsigned int[len];
-//    data = cParser.data();
-//    showMem("on retrive data");
-////    delete data; // это удалять нельзя: программа падает из-за проблем с памятью
-//    
-//    //cParser.debug();
-    cParser.clear();
-    
     showMem("on finish");
     Serial.println(F(""));
   }
