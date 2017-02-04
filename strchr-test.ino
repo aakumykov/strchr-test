@@ -111,36 +111,25 @@ class CmdParser {
 
         // передвигаю "курсор" за разделитель команды
         char* work_string = strchr(str, this->_command_delimiter) + 1;
-//
-//        // первый кусочек данных
+
+        // первый кусочек данных
         char* data_piece = getPieceBefore(work_string,this->_data_delimiter);
         work_string = strchr(work_string,this->_data_delimiter) + 1;
-        showString(data_piece,"data_piece");
-        showString(work_string,"work_string");
-        delete data_piece;
 
-        data_piece = getPieceBefore(work_string,this->_data_delimiter);
-        work_string = strchr(work_string,this->_data_delimiter) + 1;
-        showString(data_piece,"data_piece");
-        showString(work_string,"work_string");
-        delete data_piece;
+        // последующие куски, пока не закончатся
+        while (0 != strlen(data_piece)) {
+          unsigned int raw_number = (unsigned int)atol(data_piece+1);
+          
+          if ('Y'==data_piece[0]) raw_number += 32768;
+          
+          //showString(raw_number, "raw_number",true);
 
-//        data_piece = getPieceBefore(work_string,this->_data_delimiter);
-//        work_string = strchr(work_string,this->_data_delimiter) + 1;
-//
-//        // последующие куски, пока не закончатся
-//        while (0 != strlen(data_piece)) {
-//          unsigned int raw_number = (unsigned int)atol(data_piece+1);
-//          
-//          if ('Y'==data_piece[0]) raw_number += 32768;
-//          //showString(raw_number, "raw_number",true);
-//
-//          data_piece = getPieceBefore(work_string,this->_data_delimiter);
-//          work_string = strchr(work_string,this->_data_delimiter) + 1;
-//        }
-//
-//        delete data_piece;
-//        delete work_string;
+          data_piece = getPieceBefore(work_string,this->_data_delimiter);
+          work_string = strchr(work_string,this->_data_delimiter) + 1;
+        }
+
+        delete data_piece;
+        delete work_string;
     }
     
     // служебные методы
@@ -190,7 +179,7 @@ void loop() {
     showMem("on start");
     
     char* inputData = new char[sL.length()];
-          inputData = sL.data();
+    inputData = sL.data();
     showString(inputData, "inputData");
 
     cParser.parse(inputData);
