@@ -93,6 +93,7 @@ class CmdParser {
     // полезные методы
     unsigned int processCmd(char* str) {
 //      Serial.println(F("CmdParser.processCmd()"));
+//      showString(str, "str", true);
       char* cmd_piece = getPieceBefore(str,this->_command_delimiter);
       this->_cmd = (unsigned int)atol(cmd_piece);
       delete cmd_piece;
@@ -100,17 +101,34 @@ class CmdParser {
 
     unsigned int* processData(char* str) {
 //        Serial.println(F("CmdParser.processData()"));
-        
-        char* work_string = strchr(str, this->_command_delimiter);
-    
-        while (NULL != work_string) {
-          showString(work_string, "work_string", true);
+//        showString(str, "input string");
+       
+        // 123|Y0,Y2000,Y100,Y300;
+        // 456|N0,N0,Y0,Y1000,Y1000,Y1000,Y1000,Y0,Y0,Y0;
 
-//          bool laserOn = 'Y'==work_string[0];
+//        char* work_string;
+//        char* data_piece;
+
+        // передвигаю "курсор" за разделитель команды
+        char* work_string = strchr(str, this->_command_delimiter) + 1;
+
+        // первый кусочек данных
+        char* data_piece = getPieceBefore(work_string,this->_data_delimiter);
+        work_string = strchr(work_string,this->_data_delimiter) + 1;
+
+        // последующие куски, пока не закончатся
+        while (0 != strlen(data_piece)) {
+          unsigned int raw_number = (unsigned int)atol(data_piece+1);
           
-          work_string = strchr(work_string, this->_data_delimiter);
+          if ('Y'==data_piece[0]) raw_number += 32768;
+          
+          //showString(raw_number, "raw_number",true);
+
+          data_piece = getPieceBefore(work_string,this->_data_delimiter);
+          work_string = strchr(work_string,this->_data_delimiter) + 1;
         }
-    
+
+        delete data_piece;
         delete work_string;
     }
     
@@ -139,7 +157,7 @@ class CmdParser {
 };
 
 SerialListener sL(256,';');
-CmdParser cParser('|','_',':');
+CmdParser cParser('|',',',':');
 
 void setup() {
   Serial.begin(9600);
@@ -151,8 +169,8 @@ void setup() {
 
 void loop() {
 /*
-123|N0,N0,Y0,Y1000,Y1000,Y1000,Y1000,Y0,Y0,Y0;
 123|Y0,Y2000,Y100,Y300;
+456|N0,N0,Y0,Y1000,Y1000,Y1000,Y1000,Y0,Y0,Y0;
 */
 
   sL.wait();
@@ -160,16 +178,16 @@ void loop() {
   if (sL.recieved()) {
     showMem("on start");
     
-    char* rawData = new char[sL.length()];
-    rawData = sL.data();
-    showString(rawData, "rawData");
+    char* inputData = new char[sL.length()];
+    inputData = sL.data();
+    showString(inputData, "inputData");
 
-    cParser.parse(rawData);
-     unsigned int cmd = cParser.cmd();
-     showString(cmd,"cmd",true);
+    cParser.parse(inputData);
+//     unsigned int cmd = cParser.cmd();
+//     showString(cmd,"cmd",true);
 //    cParser.clear();
     
-    delete rawData;
+    delete inputData;
     showMem("on finish");
     Serial.println(F(""));
   }
