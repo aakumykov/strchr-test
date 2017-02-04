@@ -118,18 +118,26 @@ class CmdParser {
 
         // последующие куски, пока не закончатся
         while (0 != strlen(data_piece)) {
-          unsigned int raw_number = (unsigned int)atol(data_piece+1);
+          unsigned int number = (unsigned int)atol(data_piece+1);
           
-          if ('Y'==data_piece[0]) raw_number += 32768;
+          if ('Y'==data_piece[0]) number += 32768;
+          delete data_piece;
           
-          //showString(raw_number, "raw_number",true);
+          showString(number, "number", true);
+
+          this->_data[this->_counter] = number;
+          showString(this->_data[this->_counter],"_data",true);
+
+        // 456|N0,N0,Y0,Y1000,Y1000,Y1000,Y1000,Y0,Y0,Y0;
+
+          this->_counter++;
 
           data_piece = getPieceBefore(work_string,this->_data_delimiter);
           work_string = strchr(work_string,this->_data_delimiter) + 1;
         }
-
+        
         delete data_piece;
-        delete work_string;
+        //delete work_string; // не нужно, удаляется в главном цикле
     }
     
     // служебные методы
@@ -183,8 +191,20 @@ void loop() {
     showString(inputData, "inputData");
 
     cParser.parse(inputData);
-//     unsigned int cmd = cParser.cmd();
-//     showString(cmd,"cmd",true);
+     unsigned int cmd = cParser.cmd();
+     showString(cmd,"cmd",true);
+
+     unsigned int* data = new unsigned int[cParser.count()];
+      showString(data[0],"data[0]",true);
+      showString(data[1],"data[1]",true);
+      showString(data[2],"data[2]",true);
+//     for (int i=0; i<cParser.count(); i++) {
+//        Serial.print(i);
+//        Serial.print(F(": "));
+//        Serial.println(data[i]);
+//     }
+     delete data;
+    
 //    cParser.clear();
     
     delete inputData;
